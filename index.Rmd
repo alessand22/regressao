@@ -281,7 +281,7 @@ $$\mathbf{b}=(\mathbf{X'X})^{-1}\mathbf{X'Y}$$
 
 # Exemplo 1
 
-Os dados do exemplo foram extraídos de @vasconcellos2000econometria e estão em [**consRenda.txt**](dados/consRenda.txt).
+Os dados do exemplo foram extraídos de @vasconcellos2000econometria e estão em [**consRenda.txt**](consRenda.txt).
 
 
 
@@ -297,7 +297,7 @@ knitr::kable(consRenda,
 
 
 ```{r}
-consRenda <- read.table('dados/consRenda.txt',head=T)
+consRenda <- read.table('consRenda.txt',head=T)
 Y <- as.matrix(consRenda$cons)
 X <- as.matrix(consRenda$renda)
 
@@ -346,7 +346,7 @@ abline(h=0, lty = "dashed")
 
 # Exercício
 
-Estimar um modelo de regressão simples que explique as despesas com alimentação com base na renda. Os dados extraídos de @griffiths2003econometria estão em [**food.txt**](dados/food.txt).
+Estimar um modelo de regressão simples que explique as despesas com alimentação com base na renda. Os dados extraídos de @griffiths2003econometria estão em [**food.txt**](food.txt).
 
 
 

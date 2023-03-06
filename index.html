@@ -1798,7 +1798,7 @@ elementos são as estimativas dos mínimos quadrados dos elementos de
 </div>
 <div id="exemplo-1" class="section level1" number="4">
 <h1><span class="header-section-number">4</span> Exemplo 1</h1>
-<p>Os dados do exemplo foram extraídos de <span class="citation">Vasconcellos and Alves (2000)</span> e estão em <a href="dados/consRenda.txt"><strong>consRenda.txt</strong></a>.</p>
+<p>Os dados do exemplo foram extraídos de <span class="citation">Vasconcellos and Alves (2000)</span> e estão em <a href="consRenda.txt"><strong>consRenda.txt</strong></a>.</p>
 <table>
 <caption>Dados fictícios de consumo agregado e renda nacional.</caption>
 <thead>
@@ -1854,7 +1854,7 @@ elementos são as estimativas dos mínimos quadrados dos elementos de
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>consRenda <span class="ot">&lt;-</span> <span class="fu">read.table</span>(<span class="st">&#39;dados/consRenda.txt&#39;</span>,<span class="at">head=</span>T)</span>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>consRenda <span class="ot">&lt;-</span> <span class="fu">read.table</span>(<span class="st">&#39;consRenda.txt&#39;</span>,<span class="at">head=</span>T)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>Y <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(consRenda<span class="sc">$</span>cons)</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>X <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(consRenda<span class="sc">$</span>renda)</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
@@ -1931,7 +1931,7 @@ elementos são as estimativas dos mínimos quadrados dos elementos de
 <div id="exercício" class="section level1" number="5">
 <h1><span class="header-section-number">5</span> Exercício</h1>
 <p>Estimar um modelo de regressão simples que explique as despesas com
-alimentação com base na renda. Os dados extraídos de <span class="citation">Griffiths, Hill, and Judge (2003)</span> estão em <a href="dados/food.txt"><strong>food.txt</strong></a>.</p>
+alimentação com base na renda. Os dados extraídos de <span class="citation">Griffiths, Hill, and Judge (2003)</span> estão em <a href="food.txt"><strong>food.txt</strong></a>.</p>
 </div>
 <div id="referências" class="section level1 unnumbered">
 <h1 class="unnumbered">Referências</h1>
