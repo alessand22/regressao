@@ -1,0 +1,354 @@
+---
+title: |
+  ![](./figuras/logo geag 1.jpg){width=250px style="display: block; margin:0 auto:"}
+  Regressões Lineares com apoio do R
+author: "Prof. Alessandro de Castro Corrêa"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+#  pdf_document:
+#    toc: yes
+  html_document:
+    theme: flatly
+    highlight: haddock
+    number_sections: yes
+    toc: yes
+    toc_float:
+      collapsed: yes
+      smooth_scroll: no
+#  word_document:
+#    toc: yes
+bibliography: referencias.bib
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# Altera a posição do caption das figuras
+library(knitr)
+knit_hooks$set(plot = function(x, options) {
+  paste('<figure><figcaption>', options$fig.cap, '</figcaption><img src="',
+        opts_knit$get('base.url'), paste(x, collapse = '.'),
+        '"></figure>',
+        sep = '')
+})
+
+```
+---
+
+
+```{r knitr_init, echo=FALSE, cache=FALSE}
+library(knitr)
+library(rmdformats)
+
+## Global options
+options(max.print="75")
+opts_knit$set(width=75)
+```
+
+# Apresentação
+
+Este texto reúne um conjunto de notas de apoio do ensino de Regressão Linear na disciplina *Métodos Quantitativos Aplicados* ministrada nos cursos de graduação e das atividades do Grupos de Estudos Avançados em Gestão (GEAG) no Instituto Federal do Pará (IFPA).
+
+
+# Regressão
+
+A regressão é utilizada para explicar e modelar a relação entre uma variável $y$, denominada resposta ou variável dependente e uma ou mais variáveis independentes, explicativas ou fatores, $x_1,\dots, x_k$ [@faraway2002practical]. Quando, no modelo, só há uma variável explicativa, $k=1$, chama-se **regressão simples**, mas quando há mais de uma variável explicativa, $k>1$, chama-se **regressão múltipla**.
+
+$$y=f(x_1,x_2, \dots,x_k)$$
+
+A variável dependente deve ser contínua, mas as variáveis independentes podem ser contínuas, discretas ou categóricas.
+
+A regressão pode ser utilizadas para três finalidades básicas:
+
+a) **Previsão**: estimar valores da variável dependente com base nos valores das variáveis independentes;
+b) **Análise**:Analisar os efeitos de variações nas variáveis independentes ou fatores sobre a variável dependente ou resposta;
+c) **Descrição**: descrever a estrutura geral de dados.
+
+A regressão busca explicar porque os valores de cada uma das observações de $y$ são diferentes umas das outras com base na informação dos valores de $x$ associados. O valor esperado de cada $y$ para cada valor de $x$ pode ser descrito pelo seguinte modelo:
+
+$$E(y|x)=\beta_0+\beta_1X$$
+
+\noindent em que o intercepto $\beta_0$ e ao coeficiente de inclinação $\beta_i$ são constantes desconhecidas. Supondo a existência de uma única variável explicativa, os valores de $y_i$ podem ser descritas pelo modelo
+
+$$y=\beta_0+\beta_1 X+ \epsilon$$
+
+
+ em que $\epsilon$ representa um termo aleatório com média zero e variância $\sigma^2$.
+ 
+ 
+Na Figura abaixo, a reta de regressão cruza as observações dos pares ordenados $(x,y)$ com o melhor ajuste e $\beta_0$ e $\beta_1$ são, respectivamente os coeficientes lineares e de inclinação dessa reta.
+ 
+```{r echo=FALSE}
+set.seed(123)
+u <- rnorm(5,0,1)
+x<-seq(2,10,2)
+y<-2+5*x+u*10
+mod<-lm(y~x)
+
+par(mar = c(5.1,4.1,2.1,2.1)) # par(mar = c(5.1,4.1,4.1,2.1))
+
+plot(x,y, pch = 19, col="darkblue", xaxt='n', yaxt='n', ann=FALSE)
+abline(a=-1.105,b=5.840, col = "red", lwd = 1.5)
+
+mtext("y", side=2, line=1, cex=1.5, las=1)
+mtext("x", side=1, line=1, cex=1.5, las=1)
+
+text(x = 5.3, y = mod$fitted.values[2]-1,
+     expression(italic(~ beta[1])),cex=1.3)
+
+segments(4,mod$fitted.values[2],5,mod$fitted.values[2], lty = "dashed")
+segments(5,mod$fitted.values[2],
+         5,(mod$fitted.values[2]+mod$fitted.values[3])/2, lty = "dashed")
+
+mtext(text = expression(italic(~ beta[0])), 
+      side = 2, 
+      line = .5,
+      outer = FALSE, 
+      at = mod$fitted.values[1]-2, 
+      las = 2,
+      cex=1.3)
+
+
+```
+ 
+ 
+ Na presença de mais de uma variável explicativa, o modelo descritivo de $y_i$ pode ser: 
+
+
+$$y_i = \beta_0 + \beta_1 x_ + \beta_2 x_2 + \dots + \beta_k x_k+\varepsilon_i\:,\:\: i=1,\dots,N$$
+
+em que **y** corresponde ao i-ésimo valor da observado da variável dependente, *i* é o número da observação, $x_k$  correspondem à variàveis independentes, $\varepsilon_i$ são os valores do termo aleatório, $\beta_0$ é uma constante que representa o coeficiente linear ou intercepto do modelo, $\beta_1,\dots,\beta_k$ são os parâmetros de declividade ou coeficiente angular e **N** é o total de observações.
+
+
+Os valores de cada uma das observações de ($y_i$) podem ser descritos por **N** equações, como a seguir:
+
+$$
+  \begin{array}{{c@{}}@{}*{7}}
+    y_1 & {}={} & \beta_0 & {}+{} & \beta_1 x_{11} & {}+{} & \beta_2 x_{12} & {}+ \cdots +{} & \beta_{k} x_{1k} \\
+    y_2 & {}={} &\beta_0 & {}+{} & \beta_1 x_{21} & {}+{} & \beta_2 x_{22} & {}+ \cdots +{} & \beta_k x_{2k} \\[-2pt]
+    \vdots &    &  \vdots   &       & \vdots     &                & \vdots     &   & \vdots   \\
+    y_N & {}={} &\beta_0 & {}+{} & \beta_1 x_{N1} & {}+{} & \beta_2 x_{N2} & {}+ \cdots +{} & \beta_k x_{Nk}
+  \end{array}
+$$
+
+O sistema de equações acima pode ser reescrito de forma mais concisa em notação matricial:
+
+$$\mathbf{Y}=\mathbf{X}\boldsymbol{\beta}+\boldsymbol{\varepsilon}$$
+
+Em que
+
+$$
+\mathbf{\underset{N\times 1}Y} = 
+\begin{bmatrix}
+y_1\\ y_2\\ \vdots\\ y_N
+\end{bmatrix}
+\mathbf{\underset{N\times (k+1)}X} = 
+\begin{bmatrix} 1 & x_{11} & x_{12} & \dots & x_{1k} \\ 
+                1 & x_{21} & x_{22} & \dots & x_{1k} \\
+                \vdots & \vdots &  \vdots  &  \ddots  & \vdots\\
+                1 & x_{N1} & x_{N2} & \dots & x_{Nk} 
+\end{bmatrix}
+$$
+
+
+$$
+\mathbf{\underset{(k+1)\times 1}\beta} = 
+\begin{bmatrix} 
+\beta_0\\ \beta_1
+\end{bmatrix} 
+\mathbf{\underset{N\times 1} \varepsilon} = 
+\begin{bmatrix}
+\varepsilon_1\\ \varepsilon_2\\ \vdots\\ \varepsilon_N
+\end{bmatrix}
+$$
+
+
+O modelo proposto possui dois componentes: um **componente sistemático** ($\mathbf{X}\boldsymbol{\beta}$) e um **componente aleatório** ($\boldsymbol{\varepsilon}$) ou estocástico e, tendo em vista que geralmente se assume que o termo aleatório possui média zero, temos que 
+
+
+
+$$ \mathbf{Y}=\mathbf{X}\boldsymbol{\beta}$$
+
+Como o valores de X e Y são conhecidos por meio de observação ou experimentação, resta a obtenção das estimativas dos parâmetros do vetor $\boldsymbol{\beta}$ que serão os elementos do vetor $\mathbf{b}$ a seguir:
+
+$$ \mathbf{Y}=\mathbf{Xb}$$
+
+No caso dos modelos lineares, o cálculo de $\mathbf{b}$ pode ser realizado pelo método dos Mínimos Quadrados Ordinários (MQQ) ou método de Máxima Verossimilhança (MVS).
+
+
+# Estimativa do modelo
+
+
+Uma vez de posse da estimativa de $\boldsymbol{\beta}$, o modelo permite estimar os valores estimados da variável dependentes contidos no vetor $\mathbf{\hat{Y}}$:
+
+$$ \mathbf{\hat{y}}=\mathbf{Xb}$$
+
+O método dos MQO envolve encontrar $\mathbf{b}$ que minimize a soma dos quadrados dos resíduos. O resíduo ($e_i$) pode ser definido como a diferença entre o valor observado ($y_i$) é aquele calculado pelo modelo, denominado valor ajustado ou previsto ($\hat{y}$), podendo se expresso como abaixo e é ilustrado na Figura a seguir:
+
+
+$$e_i =y_i-\hat{y}_i$$
+
+Os resíduos são estimativas dos valores do termo aleratório $\epsilon$ os quais não são observáveis.
+
+```{r,echo = FALSE}
+par(mar = c(5.1,4.1,2.1,2.1)) # par(mar = c(5.1,4.1,4.1,2.1))
+
+plot(x,y, pch = 19, col="darkblue", xaxt='n', yaxt='n', ann=FALSE)
+abline(a=-1.105,b=5.840, col = "red", lwd = 2)
+segments(6,mod$fitted.values[3],6,y[3], lty = "dashed")
+text(x = 6, y = y[3], expression(italic(~ y[i])), pos = 2,cex=1.3)
+text(x = 6, y = (y[3]+mod$fitted.values[3])/2, expression(italic(e[i]==y[i]-hat(y)[i])), pos = 2, cex=1.3)
+text(x = 6, y = mod$fitted.values[3], expression(italic(~ hat(y)[i])), pos = 2,cex=1.3)
+text(x = 5.3, y = mod$fitted.values[2]-1,
+     expression(italic(~ beta[1])),cex=1.3)
+segments(4,mod$fitted.values[2],
+         5,mod$fitted.values[2], lty = "dashed")
+segments(5,mod$fitted.values[2],
+         5,(mod$fitted.values[2]+mod$fitted.values[3])/2, lty = "dashed")
+mtext(text = expression(italic(~ beta[0])), 
+      side = 2, 
+      line = .5,
+      outer = FALSE, 
+      at = mod$fitted.values[1]-2, 
+      las = 2,
+      cex=1.3)
+mtext("y", side=2, line=1, cex=1.5, las=1)
+mtext("x", side=1, line=1, cex=1.5, las=1)
+```
+
+
+
+O vetor de resíduos é 
+
+$$
+\begin{align}
+\mathbf{e} & =\mathbf{y-\hat{y}}\\
+& =\mathbf{y-Xb}
+\end{align}
+$$
+
+
+A soma dos quadrados dos resíduos (SQR) é
+
+$$
+\mathbf{e'e}=\begin{bmatrix}
+e_1, e_2, \dots, e_N\\ 
+\end{bmatrix}
+\begin{bmatrix}
+e_1\\ e_2\\ \vdots\\ e_N 
+\end{bmatrix}
+$$
+
+Que pode ser reescrita e desenvoldida da seguinte forma: 
+
+$$
+\begin{align}
+\mathbf{e'e} & = \left(\mathbf{\hat{y}-y}\right)'\left(\mathbf{\hat{y}-y}\right)\\
+ & = \left(\mathbf{y-Xb}\right)'\left(\mathbf{y-Xb}\right) \\
+ & = \mathbf{y'y}-\mathbf{b'X'y}-\mathbf{b'X'y}-\mathbf{b'X'y}+\mathbf{b'X'Xb} \\
+ & = \mathbf{y'y}-2\mathbf{b'X'y}+\mathbf{b'X'Xb}
+\end{align}
+$$
+
+Deve-se ressaltar que, para o desenvolvimento acima, leva-se em consideração que a transposta de um escalar também é um escalar $\mathbf{y'Xb}=$ $\left(\mathbf{y'Xb}\right)'= \mathbf{b'X'y}$
+
+
+
+
+$$\frac{d\left(\mathbf{e'e}\right)}{d\mathbf{b}}= -2\mathbf{X'y}+2\mathbf{X'Xb}$$
+
+Se 
+$$\frac{d\left(\mathbf{e'e}\right)}{d\mathbf{b}}=0$$
+
+
+$$-2\mathbf{X'y}+2\mathbf{X'Xb}=0$$
+
+logo
+
+$$\left(\mathbf{X'X}\right) \mathbf{b}=\mathbf{X'Y}$$
+
+Multiplicando ambos os lados por $\left(\mathbf{X'}\mathbf{X}\right)^{-1}$:
+
+$$\left(\mathbf{X'X}\right)^{-1}\left(\mathbf{X'X}\right) \mathbf{b}=\left(\mathbf{X'X}\right)^{-1}\mathbf{X'Y}$$
+
+Temos que
+
+
+$$\mathbf{b}=(\mathbf{X'X})^{-1}\mathbf{X'Y}$$
+
+ $\mathbf{b}$ é vetor cujos elementos são as estimativas dos mínimos quadrados dos elementos de $\mathbf{\beta}$.
+ 
+
+
+# Exemplo 1
+
+Os dados do exemplo foram extraídos de @vasconcellos2000econometria e estão em [**consRenda.txt**](dados/consRenda.txt).
+
+
+
+```{r, echo = FALSE}
+consRenda <- data.frame(
+  cons = c(2,3,4,4,4.5,5,6,6.5,7,7.5,8),
+  renda = c(3,4,5,6,7,9,10,11,12,12,14)
+  )
+knitr::kable(consRenda, 
+             col.names = c('Consumo Agregado','Renda Nacional'),
+             caption = "Dados fictícios de consumo agregado e renda nacional.")
+```
+
+
+```{r}
+consRenda <- read.table('consRenda.txt',head=T)
+Y <- as.matrix(consRenda$cons)
+X <- as.matrix(consRenda$renda)
+
+N <- nrow(Y)
+const<-matrix(rep(1,times = N))
+
+X<-cbind(const,X)
+X
+dim(X)
+```
+
+
+
+
+```{r}
+# b=(X'X)^-1*X'*y
+b <- solve(t(X)%*% X) %*% t(X)%*%Y # b
+b
+```
+
+
+```{r}
+Yhat<- X%*%b # valores estimados de Y
+plot(X[,2],Yhat, type = "l", col = "blue")
+points(X[,2],Y, pch = 19, col = "red")
+
+text(min(X[,2]), 8,
+     expression(y==beta[0] + beta[1]*x + epsilon), 
+     adj = 0)
+
+text(min(X[,2]), 7,
+     expression(hat(y)==0.84 + 52*X[1] + e), 
+     adj = 0)
+```
+
+
+```{r}
+# e = Y-Xb
+Y - X%*%b # Erros
+e <- Y - X%*%b # Erros
+plot(e, pch=21, col="orange",bg="orange")
+plot(X[,2], e, pch=21, col="orange",bg="orange")
+abline(h=0, lty = "dashed")
+```
+
+
+# Exercício
+
+Estimar um modelo de regressão simples que explique as despesas com alimentação com base na renda. Os dados extraídos de @griffiths2003econometria estão em [**food.txt**](dados/food.txt).
+
+
+
+# Referências
+
