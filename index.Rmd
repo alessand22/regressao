@@ -297,7 +297,7 @@ knitr::kable(consRenda,
 
 
 ```{r}
-consRenda <- read.table('consRenda.txt',head=T)
+consRenda <- read.table('dados/consRenda.txt',head=T)
 Y <- as.matrix(consRenda$cons)
 X <- as.matrix(consRenda$renda)
 
