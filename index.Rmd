@@ -137,7 +137,7 @@ $$\mathbf{Y}=\mathbf{X}\boldsymbol{\beta}+\boldsymbol{\varepsilon}$$
 Em que
 
 $$
-\mathbf{\underset{N\times 1}Y} = 
+\mathbf{\underset{N\times 1}y} = 
 \begin{bmatrix}
 y_1\\ y_2\\ \vdots\\ y_N
 \end{bmatrix}
@@ -166,11 +166,11 @@ O modelo proposto possui dois componentes: um **componente sistemático** ($\mat
 
 
 
-$$ \mathbf{Y}=\mathbf{X}\boldsymbol{\beta}$$
+$$ \mathbf{y}=\mathbf{X}\boldsymbol{\beta}$$
 
 Como o valores de X e Y são conhecidos por meio de observação ou experimentação, resta a obtenção das estimativas dos parâmetros do vetor $\boldsymbol{\beta}$ que serão os elementos do vetor $\mathbf{b}$ a seguir:
 
-$$ \mathbf{Y}=\mathbf{Xb}$$
+$$ \mathbf{y}=\mathbf{Xb}$$
 
 No caso dos modelos lineares, o cálculo de $\mathbf{b}$ pode ser realizado pelo método dos Mínimos Quadrados Ordinários (MQQ) ou método de Máxima Verossimilhança (MVS).
 
@@ -178,7 +178,7 @@ No caso dos modelos lineares, o cálculo de $\mathbf{b}$ pode ser realizado pelo
 # Estimativa do modelo
 
 
-Uma vez de posse da estimativa de $\boldsymbol{\beta}$, o modelo permite estimar os valores estimados da variável dependentes contidos no vetor $\mathbf{\hat{Y}}$:
+Uma vez de posse da estimativa de $\boldsymbol{\beta}$, o modelo permite estimar os valores estimados da variável dependentes contidos no vetor $\mathbf{\hat{y}}$:
 
 $$ \mathbf{\hat{y}}=\mathbf{Xb}$$
 
@@ -264,23 +264,24 @@ $$-2\mathbf{X'y}+2\mathbf{X'Xb}=0$$
 
 logo
 
-$$\left(\mathbf{X'X}\right) \mathbf{b}=\mathbf{X'Y}$$
+$$\left(\mathbf{X'X}\right) \mathbf{b}=\mathbf{X'y}$$
 
 Multiplicando ambos os lados por $\left(\mathbf{X'}\mathbf{X}\right)^{-1}$:
 
-$$\left(\mathbf{X'X}\right)^{-1}\left(\mathbf{X'X}\right) \mathbf{b}=\left(\mathbf{X'X}\right)^{-1}\mathbf{X'Y}$$
+$$\left(\mathbf{X'X}\right)^{-1}\left(\mathbf{X'X}\right) \mathbf{b}=\left(\mathbf{X'X}\right)^{-1}\mathbf{X'y}$$
 
 Temos que
 
 
-$$\mathbf{b}=(\mathbf{X'X})^{-1}\mathbf{X'Y}$$
+$$\mathbf{b}=(\mathbf{X'X})^{-1}\mathbf{X'y}$$
 
  $\mathbf{b}$ é vetor cujos elementos são as estimativas dos mínimos quadrados dos elementos de $\mathbf{\beta}$.
  
 
 
-# Exemplo 1
+# Exemplos
 
+## Exemplo 1
 Os dados do exemplo foram extraídos de @vasconcellos2000econometria e estão em [**consRenda.txt**](consRenda.txt).
 
 
@@ -298,10 +299,10 @@ knitr::kable(consRenda,
 
 ```{r}
 consRenda <- read.table('consRenda.txt',head=T)
-Y <- as.matrix(consRenda$cons)
+y <- as.matrix(consRenda$cons)
 X <- as.matrix(consRenda$renda)
 
-N <- nrow(Y)
+N <- nrow(y)
 const<-matrix(rep(1,times = N))
 
 X<-cbind(const,X)
@@ -314,15 +315,15 @@ dim(X)
 
 ```{r}
 # b=(X'X)^-1*X'*y
-b <- solve(t(X)%*% X) %*% t(X)%*%Y # b
+b <- solve(t(X)%*% X) %*% t(X)%*%y # b
 b
 ```
 
 
 ```{r}
-Yhat<- X%*%b # valores estimados de Y
-plot(X[,2],Yhat, type = "l", col = "blue")
-points(X[,2],Y, pch = 19, col = "red")
+yhat<- X%*%b # valores estimados de Y
+plot(X[,2],yhat, type = "l", col = "blue")
+points(X[,2],y, pch = 19, col = "red")
 
 text(min(X[,2]), 8,
      expression(y==beta[0] + beta[1]*x + epsilon), 
@@ -336,18 +337,82 @@ text(min(X[,2]), 7,
 
 ```{r}
 # e = Y-Xb
-Y - X%*%b # Erros
-e <- Y - X%*%b # Erros
+y - X%*%b # Erros
+e <- y - X%*%b # Erros
 plot(e, pch=21, col="orange",bg="orange")
 plot(X[,2], e, pch=21, col="orange",bg="orange")
 abline(h=0, lty = "dashed")
 ```
 
 
+## Exemplo 2
+
+Os dados do exemplo se referem à produção de um fábrica de chocolateforam extraídos de Fávero et al. e estão em [**FabricaChocolates.RData**](FabricaChocolates.RData).
+
+ - **ci** são os custos industriais;
+ - **emb** é a quantidade de embalagens produzidas;
+ - **ton** é a quatidade em tonelada de chocolate produzido pela fábrica.
+ 
+O propósito de um gestor é avaliar o impacto da produção da quantidade de embalagens e de  toneladas de chocolote produzidos sobre os custos industriais.
+
+
+```{r}
+load("FabricaChocolates.RData")
+
+# Inspecionar dados
+str(FabricaChocolates)
+head(FabricaChocolates)
+
+y <- as.matrix(FabricaChocolates$ci)
+X <-cbind(FabricaChocolates$emb,FabricaChocolates$ton)
+
+N <- nrow(y)
+const<-matrix(rep(1,times = N))
+
+X<-cbind(const,X)
+dim(X)
+
+# b=(X'X)^-1*X'*y
+b <- solve(t(X)%*% X) %*% t(X)%*%y # b
+b
+```
+
+
+# Funções de regressão do R
+
+```{r}
+load("FabricaChocolates.RData")
+
+
+mod <- lm(ci ~ emb + ton, data = FabricaChocolates)
+
+summary(mod)
+```
+
+
+
+
 # Exercício
 
 Estimar um modelo de regressão simples que explique as despesas com alimentação com base na renda. Os dados extraídos de @griffiths2003econometria estão em [**food.txt**](food.txt).
 
+# Estimativa da variância
+
+$$\mathbf{e'e} = \left(\mathbf{\hat{y}-y}\right)'\left(\mathbf{\hat{y}-y}\right)$$
+
+$$s^2 = \frac{1}{N-(k+1)}\sum_{i=1}^{N}e^2$$
+
+$$s^2 = \frac{1}{N-(k+1)} \mathbf{e'e}$$
+
+
+$$s^2 = \frac{1}{N-(k+1)}\left(\mathbf{\hat{y}-y}\right)'\left(\mathbf{\hat{y}-y}\right)$$
+
+$$s^2 = \frac{1}{N-(k+1)}SQR$$
+onde SSQ é a Soma dos Quadrados dos Resíduos. O divisor é número de graus de liberdade de $s^2$. Quando o modelo verdadeiro é descrito por $y=X\beta+\varepsilon$, $s^2$ é o estimador não tendencioso de $\sigma^2$.
+
+# Estimativa da Variância de beta
+
+$$var(\mathbf{b}) = s^2(\mathbf{X'X})^{-1}$$
 
 
 # Referências
