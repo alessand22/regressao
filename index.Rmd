@@ -278,17 +278,14 @@ $$\mathbf{b}=(\mathbf{X'X})^{-1}\mathbf{X'y}$$
  $\mathbf{b}$ é vetor cujos elementos são as estimativas dos mínimos quadrados dos elementos de $\mathbf{\beta}$.
  
 
-
-# Exemplos
-
-## Exemplo 1
+# Exemplo 1
 Os dados do exemplo foram extraídos de @vasconcellos2000econometria e estão em [**consRenda.txt**](consRenda.txt).
 
 
 
 ```{r, echo = FALSE}
 consRenda <- data.frame(
-  cons = c(2,3,4,4,4.5,5,6,6.5,7,7.5,8),
+  cons = c(2,3,4,4,4.5,5,6,6.5,6,7.5,8),
   renda = c(3,4,5,6,7,9,10,11,12,12,14)
   )
 knitr::kable(consRenda, 
@@ -330,7 +327,7 @@ text(min(X[,2]), 8,
      adj = 0)
 
 text(min(X[,2]), 7,
-     expression(hat(y)==0.84 + 52*X[1] + e), 
+     expression(hat(y)==0.97 + 0.49*X[1] + e), 
      adj = 0)
 ```
 
@@ -345,7 +342,75 @@ abline(h=0, lty = "dashed")
 ```
 
 
-## Exemplo 2
+
+
+
+# Exercício
+
+Estimar um modelo de regressão simples que explique as despesas com alimentação com base na renda. Os dados extraídos de @griffiths2003econometria estão em [**food.txt**](food.txt).
+
+# Estimativa da variância
+
+$$\mathbf{e'e} = \left(\mathbf{\hat{y}-y}\right)'\left(\mathbf{\hat{y}-y}\right)$$
+
+$$s^2 = \frac{1}{N-(k+1)}\sum_{i=1}^{N}e^2$$
+
+$$s^2 = \frac{1}{N-(k+1)} \mathbf{e'e}$$
+
+
+$$s^2 = \frac{1}{N-(k+1)}\left(\mathbf{\hat{y}-y}\right)'\left(\mathbf{\hat{y}-y}\right)$$
+
+$$s^2 = \frac{1}{N-(k+1)}SQR$$
+onde SSQ é a Soma dos Quadrados dos Resíduos. O divisor é número de graus de liberdade de $s^2$. Quando o modelo verdadeiro é descrito por $y=X\beta+\varepsilon$, $s^2$ é o estimador não tendencioso de $\sigma^2$.
+
+# Estimativa da Variância de beta
+
+A variância de beta é calculada por meio da Equação:
+
+$$var(\mathbf{b}) = \sigma^2(\mathbf{X'X})^{-1}$$
+
+$$var(\mathbf{b}) = s^2(\mathbf{X'X})^{-1}$$
+Deve-se ressaltar que $var(\mathbf{b})$ é uma matriz de variância e covariância de ordem $p\times p$ do vetor $\mathbf{b}$ no qual os elementos da diagonal principal são os valores de $var(b_i)$ e os demais elementos correspondem a $cov(b_i,b_j)$
+
+
+$$
+\begin{bmatrix} var(b_1) & cov(b_1,b_2) & \dots & cov(b_1,b_k) \\ 
+                cov(b_2,b_1) & var(b_2) & \dots & cov(b_2,b_k) \\
+                \vdots & \vdots &  \ddots  & \vdots\\
+                cov(b_k,b_1) & cov(b_k,b_2) & \dots & var(b_k) 
+\end{bmatrix}
+$$
+
+
+Se assumirmos que $\varepsilon\sim N(0, \sigma^2 I)$, então
+
+
+$$\mathbf{b} \sim (\mathbf{\beta},\sigma^2(\mathbf{X'X})^{-1})$$
+
+e cada beta individual é
+
+$$b_i \sim (\beta_i,\sigma^2((\mathbf{X'X})^{-1})_{ii})$$
+O erro padrão de cada $b_i$ é
+
+$$ep(b_i)=\sqrt{var(b_i)}$$
+
+# Cálculo no R com álgebra matricial
+
+```{r}
+N <- p<-dim(X)[1] # no. obs.
+p <- dim(X)[2]    # no. de parametros
+s2 <- as.numeric(1/(N-p)*t(e)%*%e) # escalar 
+
+s2*solve(t(X)%*%X)
+varb <- diag(s2*solve(t(X)%*%X))
+varb
+epb <- sqrt(varb)
+epb
+```
+
+
+
+# Exemplo 2
 
 Os dados do exemplo se referem à produção de um fábrica de chocolateforam extraídos de Fávero et al. e estão em [**FabricaChocolates.RData**](FabricaChocolates.RData).
 
@@ -389,30 +454,6 @@ mod <- lm(ci ~ emb + ton, data = FabricaChocolates)
 summary(mod)
 ```
 
-
-
-
-# Exercício
-
-Estimar um modelo de regressão simples que explique as despesas com alimentação com base na renda. Os dados extraídos de @griffiths2003econometria estão em [**food.txt**](food.txt).
-
-# Estimativa da variância
-
-$$\mathbf{e'e} = \left(\mathbf{\hat{y}-y}\right)'\left(\mathbf{\hat{y}-y}\right)$$
-
-$$s^2 = \frac{1}{N-(k+1)}\sum_{i=1}^{N}e^2$$
-
-$$s^2 = \frac{1}{N-(k+1)} \mathbf{e'e}$$
-
-
-$$s^2 = \frac{1}{N-(k+1)}\left(\mathbf{\hat{y}-y}\right)'\left(\mathbf{\hat{y}-y}\right)$$
-
-$$s^2 = \frac{1}{N-(k+1)}SQR$$
-onde SSQ é a Soma dos Quadrados dos Resíduos. O divisor é número de graus de liberdade de $s^2$. Quando o modelo verdadeiro é descrito por $y=X\beta+\varepsilon$, $s^2$ é o estimador não tendencioso de $\sigma^2$.
-
-# Estimativa da Variância de beta
-
-$$var(\mathbf{b}) = s^2(\mathbf{X'X})^{-1}$$
 
 
 # Referências
